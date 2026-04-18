@@ -122,6 +122,7 @@
             </tr>
         </thead>
         <tbody id="appTable">
+            <!-- 默认行将通过JS插入 -->
         </tbody>
     </table>
 
@@ -240,63 +241,7 @@ function switchLang(l) {
     calc();
 }
 
-// 初始化默认行（电器名称也适配泰语习惯，保留通用英文便于识别）
-window.onload = function(){
-    // 修正为 Air Conditioner 1.0 BTU
-    addRowDefault("Air Conditioner 1.0 BTU",1,750,8);
-    addRowDefault("พัดลม (Fan)",4,35,12);
-    addRowDefault("ตู้เย็น (Refrigerator)",1,120,24);
-    addRowDefault("หลอดไฟ LED (LED Light)",6,18,6);
-    addRowDefault("ทีวี (TV)",1,100,6);
-    addRowDefault("ปั๊มน้ำ (Water Pump)",1,550,2);
-    addRowDefault("หม้อหุงข้าว (Rice Cooker)",1,700,2);
-    addRowDefault("เราเตอร์ (Router)",1,12,24);
-    // 初始化后强制刷新泰语文本（确保完全生效）
-    switchLang('th');
-}
-
-// 添加默认行
-function addRowDefault(name,qty,power,hour){
-    const tb = document.getElementById("appTable");
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-    <td><input type="checkbox" class="chk"></td>
-    <td><input class="name-input" type="text" value="${name}" oninput="calc()"></td>
-    <td><input class="num-input" type="number" value="${qty}" oninput="calc()"></td>
-    <td><input class="num-input" type="number" value="${power}" oninput="calc()"></td>
-    <td><input class="num-input" type="number" value="${hour}" oninput="calc()"></td>
-    <td><span class="unit">0</span></td>
-    <td><span class="sum">0</span></td>
-    `;
-    tb.appendChild(tr);
-    calc();
-}
-
-// 添加空白行（占位符为泰语）
-function addRow(){
-    const tb = document.getElementById("appTable");
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-    <td><input type="checkbox" class="chk"></td>
-    <td><input class="name-input" type="text" placeholder="อุปกรณ์" oninput="calc()"></td>
-    <td><input class="num-input" type="number" value="1" oninput="calc()"></td>
-    <td><input class="num-input" type="number" value="0" oninput="calc()"></td>
-    <td><input class="num-input" type="number" value="0" oninput="calc()"></td>
-    <td><span class="unit">0</span></td>
-    <td><span class="sum">0</span></td>
-    `;
-    tb.appendChild(tr);
-    calc();
-}
-
-// 删除选中行
-function delRow(){
-    const chks = document.querySelectorAll(".chk:checked");
-    chks.forEach(c=>c.parentElement.parentElement.remove());
-    calc();
-}
-
-// 实时计算 + 多语言数值更新
+// 实时计算函数（提前定义，避免调用时未定义）
 function calc(){
     const rows = document.querySelectorAll("#appTable tr");
     let total = 0;
@@ -319,6 +264,65 @@ function calc(){
     document.getElementById('p3').innerHTML = lang[currentLang].battery.replace('{val}', `<span id="d3">${(total*2.05).toFixed(1)}</span>`);
     document.getElementById('p4').innerHTML = lang[currentLang].inverter.replace('{val}', `<span id="d4">${(total*0.41).toFixed(1)}</span>`);
 }
+
+// 添加默认行函数
+function addRowDefault(name,qty,power,hour){
+    const tb = document.getElementById("appTable");
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+    <td><input type="checkbox" class="chk"></td>
+    <td><input class="name-input" type="text" value="${name}" oninput="calc()"></td>
+    <td><input class="num-input" type="number" value="${qty}" oninput="calc()"></td>
+    <td><input class="num-input" type="number" value="${power}" oninput="calc()"></td>
+    <td><input class="num-input" type="number" value="${hour}" oninput="calc()"></td>
+    <td><span class="unit">0</span></td>
+    <td><span class="sum">0</span></td>
+    `;
+    tb.appendChild(tr);
+}
+
+// 添加空白行函数
+function addRow(){
+    const tb = document.getElementById("appTable");
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+    <td><input type="checkbox" class="chk"></td>
+    <td><input class="name-input" type="text" placeholder="อุปกรณ์" oninput="calc()"></td>
+    <td><input class="num-input" type="number" value="1" oninput="calc()"></td>
+    <td><input class="num-input" type="number" value="0" oninput="calc()"></td>
+    <td><input class="num-input" type="number" value="0" oninput="calc()"></td>
+    <td><span class="unit">0</span></td>
+    <td><span class="sum">0</span></td>
+    `;
+    tb.appendChild(tr);
+    calc();
+}
+
+// 删除选中行函数
+function delRow(){
+    const chks = document.querySelectorAll(".chk:checked");
+    chks.forEach(c=>c.parentElement.parentElement.remove());
+    calc();
+}
+
+// 页面加载完成后初始化（核心修复）
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. 添加所有默认电器行
+    addRowDefault("Air Conditioner 1.0 BTU",1,750,8);
+    addRowDefault("พัดลม (Fan)",4,35,12);
+    addRowDefault("ตู้เย็น (Refrigerator)",1,120,24);
+    addRowDefault("หลอดไฟ LED (LED Light)",6,18,6);
+    addRowDefault("ทีวี (TV)",1,100,6);
+    addRowDefault("ปั๊มน้ำ (Water Pump)",1,550,2);
+    addRowDefault("หม้อหุงข้าว (Rice Cooker)",1,700,2);
+    addRowDefault("เราเตอร์ (Router)",1,12,24);
+    
+    // 2. 首次计算所有行的数值
+    calc();
+    
+    // 3. 初始化语言为泰语
+    switchLang('th');
+});
 </script>
 
 </body>
