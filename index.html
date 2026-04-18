@@ -7,7 +7,10 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
         body{background:#f5f7fa;padding:30px 15px;max-width:1000px;margin:0 auto}
-        .title{text-align:center;margin-bottom:16px;color:#222}
+        /* 新增logo容器样式 */
+        .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+        .logo{width:100px;height:auto;}
+        .title{text-align:center;margin-bottom:16px;color:#222;flex:1;margin-left:-100px}
         /* 语言切换栏 */
         .lang-bar{text-align:center;margin-bottom:20px}
         .lang-btn{padding:6px 12px;margin:0 4px;border:none;border-radius:4px;cursor:pointer;background:#357abd;color:#fff}
@@ -33,11 +36,21 @@
         /* 配置结果 */
         .result{background:#eef5ff;padding:20px;border-radius:8px}
         .result p{margin:6px 0;font-size:16px}
+
+        /* 适配手机端 */
+        @media (max-width: 768px) {
+            .header{flex-direction:column;align-items:center}
+            .title{margin-left:0;margin-top:10px}
+        }
     </style>
 </head>
 <body>
 
-<h1 class="title" id="page-title">RESS Calculation</h1>
+<!-- 新增header容器，包含logo和标题 -->
+<div class="header">
+    <img src="https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/df8f367d318444eb8d2c9b2b2f350bb0.png~tplv-a9rns2rl98-24:720:720.png?lk3s=8e244e95&rcl=20260418143211E1B8ACB802EB7EBF8945&rrcfp=8a172a1a&x-expires=1777098731&x-signature=GYBmntV0xPluow%2FjGFZmJF%2BL5XA%3D" alt="Prachuthep Co.,Ltd" class="logo">
+    <h1 class="title" id="page-title">RESS Calculation</h1>
+</div>
 
 <!-- 语言切换按钮 -->
 <div class="lang-bar">
