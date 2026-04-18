@@ -1,16 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RESS Calculation</title>
+    <title>การคำนวณ RESS</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
         body{background:#f5f7fa;padding:30px 15px;max-width:1000px;margin:0 auto}
-        /* 新增logo容器样式 */
-        .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-        .logo{width:100px;height:auto;}
-        .title{text-align:center;margin-bottom:16px;color:#222;flex:1;margin-left:-100px}
+        /* Logo和标题样式（修复居中+Logo显示） */
+        .header{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            margin-bottom:16px;
+            position:relative;
+            padding-left:120px;
+        }
+        .logo{
+            width:100px;
+            height:auto;
+            position:absolute;
+            left:0;
+            top:50%;
+            transform:translateY(-50%);
+            object-fit:contain;
+        }
+        .title{
+            color:#222;
+            font-size:24px;
+            text-align:center;
+            margin:0;
+        }
         /* 语言切换栏 */
         .lang-bar{text-align:center;margin-bottom:20px}
         .lang-btn{padding:6px 12px;margin:0 4px;border:none;border-radius:4px;cursor:pointer;background:#357abd;color:#fff}
@@ -37,60 +57,96 @@
         .result{background:#eef5ff;padding:20px;border-radius:8px}
         .result p{margin:6px 0;font-size:16px}
 
+        /* 底部公司信息样式（新增） */
+        .footer{
+            margin-top:40px;
+            text-align:center;
+            font-size:14px;
+            line-height:1.8;
+            color:#333;
+            padding:20px;
+            border-top:1px solid #ddd;
+            white-space:pre-line; /* 保留换行格式 */
+        }
+
         /* 适配手机端 */
         @media (max-width: 768px) {
-            .header{flex-direction:column;align-items:center}
-            .title{margin-left:0;margin-top:10px}
+            .header{
+                flex-direction:column;
+                padding-left:0;
+                text-align:center;
+            }
+            .logo{
+                position:static;
+                transform:none;
+                margin-bottom:10px;
+            }
         }
     </style>
 </head>
 <body>
 
-<!-- 新增header容器，包含logo和标题 -->
+<!-- Logo + 标题（默认泰语） -->
 <div class="header">
-    <img src="https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/df8f367d318444eb8d2c9b2b2f350bb0.png~tplv-a9rns2rl98-24:720:720.png?lk3s=8e244e95&rcl=20260418143211E1B8ACB802EB7EBF8945&rrcfp=8a172a1a&x-expires=1777098731&x-signature=GYBmntV0xPluow%2FjGFZmJF%2BL5XA%3D" alt="Prachuthep Co.,Ltd" class="logo">
-    <h1 class="title" id="page-title">RESS Calculation</h1>
+    <img src="https://p11-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/df8f367d318444eb8d2c9b2b2f350bb0.png" 
+         alt="Prachuthep Co.,Ltd Logo" 
+         class="logo"
+         onerror="this.src='https://via.placeholder.com/100?text=Prachuthep'; this.alt='Company Logo';">
+    <h1 class="title" id="page-title">การคำนวณ RESS</h1>
 </div>
 
-<!-- 语言切换按钮 -->
+<!-- 语言切换按钮（默认选中泰语） -->
 <div class="lang-bar">
-    <button class="lang-btn active" onclick="switchLang('en')">English</button>
+    <button class="lang-btn" onclick="switchLang('en')">English</button>
     <button class="lang-btn" onclick="switchLang('vi')">Tiếng Việt</button>
-    <button class="lang-btn" onclick="switchLang('th')">ภาษาไทย</button>
+    <button class="lang-btn active" onclick="switchLang('th')">ภาษาไทย</button>
 </div>
 
-<!-- 电器清单 -->
+<!-- 电器清单（默认泰语） -->
 <div class="box">
-    <h3 id="app-title">Appliance List</h3>
+    <h3 id="app-title">รายการอุปกรณ์</h3>
     <div class="btn-bar">
-        <button class="btn" id="add-btn" onclick="addRow()">+ Add Appliance</button>
-        <button class="btn del" id="del-btn" onclick="delRow()">- Delete Selected</button>
+        <button class="btn" id="add-btn">+ เพิ่มอุปกรณ์</button>
+        <button class="btn del" id="del-btn">- ลบรายการที่เลือก</button>
     </div>
     <table>
         <thead>
             <tr>
-                <th id="th-select">Select</th>
-                <th id="th-app">Appliance</th>
-                <th id="th-qty">Qty</th>
-                <th id="th-power">Power(W)</th>
-                <th id="th-hour">Hour/Day</th>
-                <th id="th-unit">Unit(kWh)</th>
-                <th id="th-total">Total(kWh)</th>
+                <th id="th-select">เลือก</th>
+                <th id="th-app">อุปกรณ์</th>
+                <th id="th-qty">จำนวน</th>
+                <th id="th-power">กำลัง(W)</th>
+                <th id="th-hour">ชั่วโมง/วัน</th>
+                <th id="th-unit">หน่วย(kWh)</th>
+                <th id="th-total">รวม(kWh)</th>
             </tr>
         </thead>
         <tbody id="appTable">
         </tbody>
     </table>
 
-    <div class="total" id="total-label">Total Consumption: <span id="total">0</span> kWh/day</div>
+    <div class="total" id="total-label">การใช้พลังงานรวม: <span id="total">0</span> kWh/วัน</div>
 
     <div class="result">
-        <h3 id="sys-title">System Recommendation</h3>
-        <p id="p1">Daily Consumption: <span id="d1">0</span> kWh</p>
-        <p id="p2">Solar Panel: <span id="d2">0</span> KWp</p>
-        <p id="p3">Battery Capacity: <span id="d3">0</span> KWh (51.2V)</p>
-        <p id="p4">Inverter: <span id="d4">0</span> KVA Pure Sine Wave</p>
+        <h3 id="sys-title">คำแนะนำระบบ</h3>
+        <p id="p1">การใช้ประจำวัน: <span id="d1">0</span> kWh</p>
+        <p id="p2">แผงโซล่าเซลล์: <span id="d2">0</span> KWp</p>
+        <p id="p3">ความจุแบตเตอรี่: <span id="d3">0</span> KWh (51.2V)</p>
+        <p id="p4">อินเวอร์เตอร์: <span id="d4">0</span> KVA คลื่นไซน์บริสุทธิ์</p>
     </div>
+</div>
+
+<!-- 底部公司信息（新增指定泰语内容） -->
+<div class="footer">
+บริษัท ประจวบคีรีขันธ์ จำกัด
+99/37 หมู่ 22 บางพลี-ตำหรุ
+บางพลี-ใหญ่ บางพลี สมุทรปราการ 10540 ประเทศไทย
+
+เลขประจำตัวผู้เสียภาษี 0-1255-64015-78-8
+
+โทร. +66 90 944 9428
+อีเมล์ : Prachuthep@gmail.com
+ไลน์ไอดี: Dudeshop888
 </div>
 
 <script>
@@ -155,8 +211,8 @@ const lang = {
     }
 };
 
-// 当前默认语言
-let currentLang = 'en';
+// 默认语言设置为泰语
+let currentLang = 'th';
 
 // 切换语言函数
 function switchLang(l) {
@@ -184,17 +240,19 @@ function switchLang(l) {
     calc();
 }
 
-// 初始化默认行
+// 初始化默认行（电器名称也适配泰语习惯，保留通用英文便于识别）
 window.onload = function(){
-    addRowDefault("Air Conditioner 1.0HP",1,750,8);
-    addRowDefault("Fan",4,35,12);
-    addRowDefault("Refrigerator",1,120,24);
-    addRowDefault("LED Light",6,18,6);
-    addRowDefault("TV",1,100,6);
-    addRowDefault("Water Pump",1,550,2);
-    addRowDefault("Rice Cooker",1,700,2);
-    addRowDefault("Router",1,12,24);
-    switchLang('en');
+    // 修正为 Air Conditioner 1.0 BTU
+    addRowDefault("Air Conditioner 1.0 BTU",1,750,8);
+    addRowDefault("พัดลม (Fan)",4,35,12);
+    addRowDefault("ตู้เย็น (Refrigerator)",1,120,24);
+    addRowDefault("หลอดไฟ LED (LED Light)",6,18,6);
+    addRowDefault("ทีวี (TV)",1,100,6);
+    addRowDefault("ปั๊มน้ำ (Water Pump)",1,550,2);
+    addRowDefault("หม้อหุงข้าว (Rice Cooker)",1,700,2);
+    addRowDefault("เราเตอร์ (Router)",1,12,24);
+    // 初始化后强制刷新泰语文本（确保完全生效）
+    switchLang('th');
 }
 
 // 添加默认行
@@ -214,13 +272,13 @@ function addRowDefault(name,qty,power,hour){
     calc();
 }
 
-// 添加空白行
+// 添加空白行（占位符为泰语）
 function addRow(){
     const tb = document.getElementById("appTable");
     const tr = document.createElement("tr");
     tr.innerHTML = `
     <td><input type="checkbox" class="chk"></td>
-    <td><input class="name-input" type="text" placeholder="Appliance" oninput="calc()"></td>
+    <td><input class="name-input" type="text" placeholder="อุปกรณ์" oninput="calc()"></td>
     <td><input class="num-input" type="number" value="1" oninput="calc()"></td>
     <td><input class="num-input" type="number" value="0" oninput="calc()"></td>
     <td><input class="num-input" type="number" value="0" oninput="calc()"></td>
